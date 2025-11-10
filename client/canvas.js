@@ -1,4 +1,3 @@
-// Canvas Drawing Module
 class CanvasManager {
     constructor() {
         this.canvas = null;
@@ -9,24 +8,14 @@ class CanvasManager {
         this.currentSize = 5;
         this.lastX = 0;
         this.lastY = 0;
-        
-        // User-specific history for undo/redo
-        this.userStrokes = [];  // Array of all strokes by current user
-        this.redoStack = [];    // Strokes that were undone
-        this.allStrokes = [];   // All strokes from all users
+        this.userStrokes = [];
+        this.redoStack = [];
+        this.allStrokes = [];
         this.strokeIdCounter = 0;
-        
-        // Optimization: batch drawing points
         this.drawingBatch = [];
         this.batchTimer = null;
-        
-        // Track current path for smooth drawing
         this.currentPath = [];
-        
-        // WebSocket reference (set by websocket.js)
         this.socket = null;
-        
-        // User identification
         this.userId = null;
     }
     
@@ -35,15 +24,10 @@ class CanvasManager {
         this.ctx = this.canvas.getContext('2d');
         this.userId = userId;
         
-        // Set canvas size
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
-        
-        // Set initial canvas properties
         this.ctx.lineCap = 'round';
         this.ctx.lineJoin = 'round';
-        
-        // Set up event listeners
         this.setupEventListeners();
     }
     
@@ -67,13 +51,11 @@ class CanvasManager {
     }
     
     setupEventListeners() {
-        // Mouse events
         this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
         this.canvas.addEventListener('mousemove', (e) => this.draw(e));
         this.canvas.addEventListener('mouseup', () => this.stopDrawing());
         this.canvas.addEventListener('mouseout', () => this.stopDrawing());
         
-        // Touch events for mobile
         this.canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touch = e.touches[0];
@@ -106,7 +88,6 @@ class CanvasManager {
         this.lastX = e.clientX - rect.left;
         this.lastY = e.clientY - rect.top;
         
-        // Start new path
         this.currentPath = [{
             x: this.lastX,
             y: this.lastY,
@@ -121,7 +102,6 @@ class CanvasManager {
     
     draw(e) {
         if (!this.isDrawing) {
-            // Send cursor position even when not drawing
             this.sendCursorPosition(e);
             return;
         }
@@ -130,16 +110,13 @@ class CanvasManager {
         const currentX = e.clientX - rect.left;
         const currentY = e.clientY - rect.top;
         
-        // Draw line segment
         this.drawLine(this.lastX, this.lastY, currentX, currentY);
         
-        // Add to current path
         this.currentPath.push({
             x: currentX,
             y: currentY
         });
         
-        // Batch the drawing data for network optimization
         this.batchDrawingData({
             type: 'draw',
             from: { x: this.lastX, y: this.lastY },
@@ -157,7 +134,6 @@ class CanvasManager {
         if (this.isDrawing) {
             this.isDrawing = false;
             
-            // Create stroke object
             if (this.currentPath.length > 0) {
                 const stroke = {
                     id: `${this.userId}-${Date.now()}-${this.strokeIdCounter++}`,
@@ -173,19 +149,14 @@ class CanvasManager {
                 this.userStrokes.push(stroke);
                 this.allStrokes.push(stroke);
                 
-                // Clear redo stack when new stroke is added
                 this.redoStack = [];
                 
-                // Send to server
                 if (this.socket) {
                     this.socket.emit('drawing-stroke', stroke);
                 }
             }
             
-            // Clear current path
             this.currentPath = [];
-            
-            // Flush any remaining batched data
             this.flushBatch();
         }
     }
@@ -245,10 +216,8 @@ class CanvasManager {
         this.ctx.lineWidth = pathData.size;
         this.ctx.beginPath();
         
-        // Move to first point
         this.ctx.moveTo(pathData.path[0].x, pathData.path[0].y);
         
-        // Draw smooth curve through points
         for (let i = 1; i < pathData.path.length; i++) {
             const point = pathData.path[i];
             this.ctx.lineTo(point.x, point.y);
@@ -284,21 +253,16 @@ class CanvasManager {
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         
-        // Throttle cursor updates
         if (!this.cursorThrottle) {
             this.socket.emit('cursor-move', { x, y });
             this.cursorThrottle = setTimeout(() => {
                 this.cursorThrottle = null;
-            }, 50); // Send cursor updates at most every 50ms
+            }, 50);
         }
     }
     
-    // Remote drawing methods
     drawRemoteStroke(strokeData) {
-        // Add to all strokes but not user strokes
         this.allStrokes.push(strokeData);
-        
-        // Draw the stroke
         this.drawStroke(strokeData);
     }
     
@@ -333,7 +297,6 @@ class CanvasManager {
         // Move to first point
         this.ctx.moveTo(strokeData.path[0].x, strokeData.path[0].y);
         
-        // Draw smooth curve through points
         for (let i = 1; i < strokeData.path.length; i++) {
             const point = strokeData.path[i];
             this.ctx.lineTo(point.x, point.y);
@@ -343,36 +306,23 @@ class CanvasManager {
         this.ctx.restore();
     }
     
-    // Redraw entire canvas from strokes
     redrawCanvas() {
-        // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
-        // Redraw all strokes in order
         this.allStrokes.forEach(stroke => {
             this.drawStroke(stroke);
         });
     }
     
-    // User-specific undo/redo
     undo() {
         if (this.userStrokes.length > 0) {
-            // Remove last stroke by current user
             const lastStroke = this.userStrokes.pop();
-            
-            // Add to redo stack
             this.redoStack.push(lastStroke);
-            
-            // Remove from all strokes
             const index = this.allStrokes.findIndex(s => s.id === lastStroke.id);
             if (index !== -1) {
                 this.allStrokes.splice(index, 1);
             }
-            
-            // Redraw canvas
             this.redrawCanvas();
-            
-            // Notify server
             if (this.socket) {
                 this.socket.emit('undo-stroke', { strokeId: lastStroke.id });
             }
@@ -400,9 +350,7 @@ class CanvasManager {
         }
     }
     
-    // Handle remote undo/redo
     handleRemoteUndo(strokeId) {
-        // Remove stroke from all strokes
         const index = this.allStrokes.findIndex(s => s.id === strokeId);
         if (index !== -1) {
             this.allStrokes.splice(index, 1);
@@ -411,30 +359,21 @@ class CanvasManager {
     }
     
     handleRemoteRedo(strokeData) {
-        // Add stroke back to all strokes
         this.allStrokes.push(strokeData);
         this.redrawCanvas();
     }
     
     clear() {
-        // Only clear current user's strokes
         this.userStrokes = [];
         this.redoStack = [];
-        
-        // Remove user's strokes from all strokes
         this.allStrokes = this.allStrokes.filter(s => s.userId !== this.userId);
-        
-        // Redraw canvas
         this.redrawCanvas();
-        
-        // Notify server
         if (this.socket) {
             this.socket.emit('clear-user-strokes', { userId: this.userId });
         }
     }
     
     clearAll() {
-        // Clear everything (admin action)
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.userStrokes = [];
         this.redoStack = [];
@@ -445,7 +384,6 @@ class CanvasManager {
         }
     }
     
-    // Load initial canvas state
     loadCanvasStrokes(strokes) {
         this.allStrokes = strokes;
         // Filter user's own strokes
@@ -475,5 +413,4 @@ class CanvasManager {
     }
 }
 
-// Export for use in other modules
 window.CanvasManager = CanvasManager;

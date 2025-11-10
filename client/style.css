@@ -11,7 +11,6 @@ body {
     overflow: hidden;
 }
 
-/* Login Modal */
 .modal {
     position: fixed;
     top: 0;
@@ -74,7 +73,6 @@ body {
     transform: translateY(0);
 }
 
-/* Main App */
 #app {
     height: 100vh;
     display: flex;
@@ -86,7 +84,6 @@ body {
     display: none;
 }
 
-/* Header */
 header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;

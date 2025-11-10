@@ -1,28 +1,22 @@
-// Main Application Entry Point
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize managers
     const canvasManager = new CanvasManager();
     const wsManager = new WebSocketManager();
     
-    // UI Elements
     const loginModal = document.getElementById('loginModal');
     const usernameInput = document.getElementById('usernameInput');
     const joinBtn = document.getElementById('joinBtn');
     const app = document.getElementById('app');
     
-    // Tool elements
     const toolButtons = document.querySelectorAll('.tool-btn');
     const colorPicker = document.getElementById('colorPicker');
     const colorPresets = document.querySelectorAll('.color-preset');
     const brushSizeSlider = document.getElementById('brushSize');
     const brushSizeValue = document.getElementById('brushSizeValue');
     
-    // Action buttons
     const undoBtn = document.getElementById('undoBtn');
     const redoBtn = document.getElementById('redoBtn');
     const clearBtn = document.getElementById('clearBtn');
     
-    // Login functionality
     function joinCanvas() {
         const username = usernameInput.value.trim();
         
@@ -36,17 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Hide login modal and show app
         loginModal.style.display = 'none';
         app.classList.remove('hidden');
         
-        // Generate a temporary userId (will be replaced by server)
         const tempUserId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
         
-        // Initialize canvas with userId
         canvasManager.init('drawingCanvas', tempUserId);
-        
-        // Connect to server
         wsManager.connect(username, canvasManager);
     }
     
@@ -63,15 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Tool selection
     toolButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Remove active class from all buttons
             toolButtons.forEach(b => b.classList.remove('active'));
-            // Add active class to clicked button
             btn.classList.add('active');
-            // Set tool in canvas manager
             const tool = btn.dataset.tool;
             canvasManager.setTool(tool);
-            
-            // Update cursor style
             updateCursorStyle(tool);
         });
     });
@@ -176,44 +160,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle visibility change (tab switching)
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden && wsManager.socket) {
-            // Reconnect if needed when tab becomes visible
             if (!wsManager.isConnected) {
                 wsManager.socket.connect();
             }
         }
     });
     
-    // Warn before leaving page if drawing is in progress
     window.addEventListener('beforeunload', (e) => {
         if (wsManager.isConnected) {
             e.preventDefault();
             e.returnValue = 'Are you sure you want to leave? You will be disconnected from the canvas.';
         }
     });
-    
-    // Debug info (can be removed in production)
-    if (window.location.hostname === 'localhost') {
-        console.log('Running in development mode');
-        
-        // Add FPS counter
-        let lastTime = performance.now();
-        let frames = 0;
-        
-        function updateFPS() {
-            frames++;
-            const currentTime = performance.now();
-            
-            if (currentTime >= lastTime + 1000) {
-                const fps = Math.round(frames * 1000 / (currentTime - lastTime));
-                console.log(`FPS: ${fps}`);
-                frames = 0;
-                lastTime = currentTime;
-            }
-            
-            requestAnimationFrame(updateFPS);
-        }
-        
-        // Uncomment to enable FPS logging
-        // updateFPS();
-    }
 });

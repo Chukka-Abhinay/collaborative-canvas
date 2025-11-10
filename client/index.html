@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Login Modal -->
     <div id="loginModal" class="modal">
         <div class="modal-content">
             <h2>Welcome to Collaborative Canvas</h2>
@@ -16,9 +15,7 @@
         </div>
     </div>
 
-    <!-- Main App Container -->
     <div id="app" class="hidden">
-        <!-- Header -->
         <header>
             <div class="app-title">
                 <h1>Collaborative Canvas</h1>
@@ -29,11 +26,8 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main>
-            <!-- Sidebar with Tools -->
             <aside class="sidebar">
-                <!-- Drawing Tools -->
                 <div class="tool-section">
                     <h3>Tools</h3>
                     <div class="tool-buttons">
@@ -46,7 +40,6 @@
                     </div>
                 </div>
 
-                <!-- Color Picker -->
                 <div class="tool-section">
                     <h3>Color</h3>
                     <input type="color" id="colorPicker" value="#000000">
@@ -62,13 +55,11 @@
                     </div>
                 </div>
 
-                <!-- Brush Size -->
                 <div class="tool-section">
                     <h3>Brush Size: <span id="brushSizeValue">5</span></h3>
                     <input type="range" id="brushSize" min="1" max="50" value="5">
                 </div>
 
-                <!-- Actions -->
                 <div class="tool-section">
                     <h3>Actions</h3>
                     <button id="undoBtn" class="action-btn" title="Undo your last stroke">↶ My Undo</button>
@@ -76,14 +67,12 @@
                     <button id="clearBtn" class="action-btn danger" title="Clear your drawings">Clear My Drawings</button>
                 </div>
 
-                <!-- Online Users -->
                 <div class="tool-section">
                     <h3>Online Users (<span id="userCount">0</span>)</h3>
                     <div id="usersList" class="users-list"></div>
                 </div>
             </aside>
 
-            <!-- Canvas Container -->
             <div class="canvas-container">
                 <canvas id="drawingCanvas"></canvas>
                 <div id="cursors"></div>
@@ -91,9 +80,7 @@
         </main>
     </div>
 
-    <!-- Socket.io -->
     <script src="/socket.io/socket.io.js"></script>
-    <!-- App Scripts -->
     <script src="websocket.js"></script>
     <script src="canvas.js"></script>
     <script src="main.js"></script>

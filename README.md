@@ -82,57 +82,7 @@ This will start the server with nodemon for auto-reloading.
 - `E` - Select Eraser tool
 - `1-9` - Quick brush size (multiplied by 5)
 
-## 🚀 Deployment on Vercel
 
-### Option 1: Using Vercel CLI
-
-1. Install Vercel CLI:
-```bash
-npm i -g vercel
-```
-
-2. Deploy:
-```bash
-vercel
-```
-
-3. Follow the prompts to deploy
-
-### Option 2: GitHub Integration
-
-1. Push your code to GitHub
-2. Import the repository on [Vercel Dashboard](https://vercel.com/dashboard)
-3. Configure build settings:
-   - Framework Preset: Other
-   - Build Command: `npm run build` (or leave empty)
-   - Output Directory: `./`
-   - Install Command: `npm install`
-4. Deploy
-
-### Vercel Configuration
-
-Create a `vercel.json` file in the root directory (already included):
-```json
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "server/server.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/socket.io/(.*)",
-      "dest": "/server/server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/server/server.js"
-    }
-  ]
-}
-```
 
 ## 🏗️ Architecture
 

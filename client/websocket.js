@@ -1,4 +1,3 @@
-// WebSocket Connection Manager
 class WebSocketManager {
     constructor() {
         this.socket = null;
@@ -9,7 +8,6 @@ class WebSocketManager {
         this.canvasManager = null;
         this.isConnected = false;
         
-        // Callbacks
         this.onUsersUpdate = null;
         this.onConnectionChange = null;
     }
@@ -18,8 +16,6 @@ class WebSocketManager {
         this.username = username;
         this.canvasManager = canvasManager;
         
-        // Initialize Socket.io connection
-        // In production, this will connect to the Vercel serverless function
         const socketUrl = window.location.hostname === 'localhost' 
             ? 'http://localhost:3000' 
             : window.location.origin;
@@ -31,23 +27,17 @@ class WebSocketManager {
             reconnectionAttempts: 5
         });
         
-        // Set socket reference in canvas manager
         canvasManager.setSocket(this.socket);
         
         this.setupEventListeners();
-        
-        // Join with username
         this.socket.emit('join', { username });
     }
     
     setupEventListeners() {
-        // Connection events
         this.socket.on('connect', () => {
             console.log('Connected to server');
             this.isConnected = true;
             this.updateConnectionStatus(true);
-            
-            // Rejoin if reconnecting
             if (this.username) {
                 this.socket.emit('join', { username: this.username });
             }
@@ -64,16 +54,11 @@ class WebSocketManager {
             this.updateConnectionStatus(false);
         });
         
-        // User events
         this.socket.on('user-joined', (data) => {
             console.log('User joined:', data);
             this.userId = data.userId;
             this.userColor = data.userColor;
-            
-            // Set userId in canvas manager
             this.canvasManager.setUserId(data.userId);
-            
-            // Update UI with user info
             document.getElementById('currentUser').textContent = 
                 `${data.username} (You)`;
             document.getElementById('currentUser').style.color = data.userColor;
@@ -90,7 +75,6 @@ class WebSocketManager {
             this.removeCursor(userId);
         });
         
-        // Drawing events - updated for stroke-based system
         this.socket.on('remote-drawing-stroke', (data) => {
             if (data.userId !== this.userId) {
                 this.canvasManager.drawRemoteStroke(data);
@@ -103,9 +87,7 @@ class WebSocketManager {
             }
         });
         
-        // Canvas state events - for initial load
         this.socket.on('initial-canvas-strokes', (data) => {
-            // Load initial strokes when joining
             if (data.strokes) {
                 this.canvasManager.loadCanvasStrokes(data.strokes);
             }
@@ -126,7 +108,6 @@ class WebSocketManager {
         
         this.socket.on('remote-clear-user', (data) => {
             if (data.userId !== this.userId) {
-                // Remove all strokes from that user
                 this.canvasManager.allStrokes = this.canvasManager.allStrokes.filter(
                     s => s.userId !== data.userId
                 );
@@ -135,14 +116,12 @@ class WebSocketManager {
         });
         
         this.socket.on('remote-clear-all', () => {
-            // Clear entire canvas
             this.canvasManager.allStrokes = [];
             this.canvasManager.userStrokes = [];
             this.canvasManager.redoStack = [];
             this.canvasManager.redrawCanvas();
         });
         
-        // Cursor events
         this.socket.on('cursor-position', (data) => {
             if (data.userId !== this.userId) {
                 this.updateUserCursor(data.userId, data.x, data.y);
@@ -216,7 +195,6 @@ class WebSocketManager {
             cursor.style.transform = `translate(${x}px, ${y}px)`;
             cursor.style.opacity = '1';
             
-            // Hide cursor after inactivity
             clearTimeout(cursor.hideTimeout);
             cursor.hideTimeout = setTimeout(() => {
                 cursor.style.opacity = '0';
@@ -239,5 +217,4 @@ class WebSocketManager {
     }
 }
 
-// Export for use in other modules
 window.WebSocketManager = WebSocketManager;
