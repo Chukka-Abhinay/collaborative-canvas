@@ -1,0 +1,358 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Login Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    min-width: 300px;
+}
+
+.modal-content h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+#usernameInput {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s;
+}
+
+#usernameInput:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+#joinBtn {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#joinBtn:hover {
+    transform: translateY(-2px);
+}
+
+#joinBtn:active {
+    transform: translateY(0);
+}
+
+/* Main App */
+#app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: white;
+}
+
+#app.hidden {
+    display: none;
+}
+
+/* Header */
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.app-title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.app-title h1 {
+    font-size: 1.5rem;
+}
+
+#connectionStatus {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.status-connected {
+    background: #4caf50;
+}
+
+.status-disconnected {
+    background: #f44336;
+}
+
+#currentUser {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Main Layout */
+main {
+    flex: 1;
+    display: flex;
+    height: calc(100vh - 68px);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background: #f5f5f5;
+    padding: 1rem;
+    overflow-y: auto;
+    border-right: 1px solid #ddd;
+}
+
+.tool-section {
+    margin-bottom: 1.5rem;
+}
+
+.tool-section h3 {
+    margin-bottom: 0.75rem;
+    color: #333;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tool-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+}
+
+.tool-btn {
+    padding: 0.75rem;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: all 0.3s;
+}
+
+.tool-btn:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+}
+
+.tool-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+}
+
+/* Color Picker */
+#colorPicker {
+    width: 100%;
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 0.75rem;
+}
+
+.color-presets {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.color-preset {
+    width: 100%;
+    aspect-ratio: 1;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.color-preset:hover {
+    transform: scale(1.1);
+    border-color: #667eea;
+}
+
+/* Brush Size */
+#brushSize {
+    width: 100%;
+}
+
+/* Action Buttons */
+.action-btn {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.action-btn:hover {
+    border-color: #667eea;
+    background: #f0f0f0;
+}
+
+.action-btn.danger {
+    border-color: #f44336;
+    color: #f44336;
+}
+
+.action-btn.danger:hover {
+    background: #f44336;
+    color: white;
+}
+
+/* Users List */
+.users-list {
+    background: white;
+    border-radius: 5px;
+    padding: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    margin-bottom: 0.25rem;
+    border-radius: 5px;
+    background: #f9f9f9;
+}
+
+.user-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+/* Canvas Container */
+.canvas-container {
+    flex: 1;
+    position: relative;
+    background: white;
+    overflow: hidden;
+}
+
+#drawingCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: crosshair;
+    background: white;
+}
+
+/* Cursors Container */
+#cursors {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.user-cursor {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+    border-radius: 50%;
+    border: 2px solid;
+    opacity: 0.8;
+    transition: all 0.1s ease-out;
+    pointer-events: none;
+}
+
+.user-cursor::after {
+    content: attr(data-username);
+    position: absolute;
+    top: 20px;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+    
+    .tool-section h3 {
+        font-size: 0.8rem;
+    }
+    
+    .app-title h1 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 600px) {
+    main {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: 150px;
+        display: flex;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 0.5rem;
+        gap: 1rem;
+    }
+    
+    .tool-section {
+        min-width: 120px;
+    }
+}

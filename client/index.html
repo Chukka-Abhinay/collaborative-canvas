@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborative Drawing Canvas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h2>Welcome to Collaborative Canvas</h2>
+            <input type="text" id="usernameInput" placeholder="Enter your name" maxlength="20">
+            <button id="joinBtn">Join Canvas</button>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="hidden">
+        <!-- Header -->
+        <header>
+            <div class="app-title">
+                <h1>Collaborative Canvas</h1>
+                <span id="connectionStatus" class="status-disconnected">Disconnected</span>
+            </div>
+            <div class="user-info">
+                <span id="currentUser"></span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Sidebar with Tools -->
+            <aside class="sidebar">
+                <!-- Drawing Tools -->
+                <div class="tool-section">
+                    <h3>Tools</h3>
+                    <div class="tool-buttons">
+                        <button class="tool-btn active" data-tool="brush" title="Brush">
+                            <span>✏️</span>
+                        </button>
+                        <button class="tool-btn" data-tool="eraser" title="Eraser">
+                            <span>🧹</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Color Picker -->
+                <div class="tool-section">
+                    <h3>Color</h3>
+                    <input type="color" id="colorPicker" value="#000000">
+                    <div class="color-presets">
+                        <button class="color-preset" data-color="#000000" style="background: #000000"></button>
+                        <button class="color-preset" data-color="#FF0000" style="background: #FF0000"></button>
+                        <button class="color-preset" data-color="#00FF00" style="background: #00FF00"></button>
+                        <button class="color-preset" data-color="#0000FF" style="background: #0000FF"></button>
+                        <button class="color-preset" data-color="#FFFF00" style="background: #FFFF00"></button>
+                        <button class="color-preset" data-color="#FF00FF" style="background: #FF00FF"></button>
+                        <button class="color-preset" data-color="#00FFFF" style="background: #00FFFF"></button>
+                        <button class="color-preset" data-color="#FFFFFF" style="background: #FFFFFF"></button>
+                    </div>
+                </div>
+
+                <!-- Brush Size -->
+                <div class="tool-section">
+                    <h3>Brush Size: <span id="brushSizeValue">5</span></h3>
+                    <input type="range" id="brushSize" min="1" max="50" value="5">
+                </div>
+
+                <!-- Actions -->
+                <div class="tool-section">
+                    <h3>Actions</h3>
+                    <button id="undoBtn" class="action-btn" title="Undo your last stroke">↶ My Undo</button>
+                    <button id="redoBtn" class="action-btn" title="Redo your last undone stroke">↷ My Redo</button>
+                    <button id="clearBtn" class="action-btn danger" title="Clear your drawings">Clear My Drawings</button>
+                </div>
+
+                <!-- Online Users -->
+                <div class="tool-section">
+                    <h3>Online Users (<span id="userCount">0</span>)</h3>
+                    <div id="usersList" class="users-list"></div>
+                </div>
+            </aside>
+
+            <!-- Canvas Container -->
+            <div class="canvas-container">
+                <canvas id="drawingCanvas"></canvas>
+                <div id="cursors"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- App Scripts -->
+    <script src="websocket.js"></script>
+    <script src="canvas.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
